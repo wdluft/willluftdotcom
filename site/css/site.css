@@ -1,0 +1,246 @@
+/*
+  willluft.com site styles.
+  Loaded after graffiti.css. Every Graffiti rule lives in an @layer, so these
+  unlayered rules win over Graffiti regardless of specificity.
+  Colour values approximate the open-props tokens the old React site used
+  (gray-0, gray-12, cyan-3, yellow-4, yellow-6).
+*/
+
+/* ------------------------------------------------------------------ */
+/* Tokens                                                              */
+/* ------------------------------------------------------------------ */
+:root {
+  /* The site is dark-only: make Graffiti's light-dark() resolve dark. */
+  color-scheme: dark;
+
+  /* Graffiti's own tokens */
+  --bg-dark: #030507; /* open-props gray-12 */
+  --fg-dark: #f8f9fa; /* open-props gray-0 */
+  --primary: #66d9e8; /* open-props cyan-3 */
+  --accent: var(--primary);
+
+  /* Site tokens */
+  --highlight: #ffd43b; /* open-props yellow-4: link and nav hover */
+  --highlight-dark: #fab005; /* open-props yellow-6: icon hover on the cyan card */
+  --ink: var(--bg-dark); /* dark text on cyan */
+  --ease-in-out: cubic-bezier(0.1, 0, 0.9, 1); /* open-props ease-in-out-1 */
+  --ease-out: cubic-bezier(0.25, 0, 0.5, 1); /* open-props ease-1 */
+  --max-content-width: 768px;
+  --page-padding: 3rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+html {
+  overflow-y: scroll; /* always show the scrollbar, as before */
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--bg);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  block-size: auto; /* keep the aspect ratio from the width/height attributes */
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--primary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  a:hover {
+    text-decoration-color: var(--highlight);
+  }
+}
+
+/* Skip link: Graffiti 4.30.0 has no .skip-link, so .visually-hidden is
+   undone on focus here. */
+.skip-link:focus {
+  position: absolute;
+  z-index: 10;
+  inset-block-start: var(--pad-l);
+  inset-inline-start: var(--pad-l);
+  inline-size: auto;
+  block-size: auto;
+  margin: 0;
+  padding: var(--pad-s) var(--pad-l);
+  clip: auto;
+  overflow: visible;
+  background: var(--primary);
+  color: var(--ink);
+  font-weight: var(--fw-bold);
+  text-decoration: none;
+  border-radius: var(--br-s);
+  --focus-ring: 2px solid var(--fg);
+}
+
+/* ------------------------------------------------------------------ */
+/* Header / nav                                                        */
+/* ------------------------------------------------------------------ */
+.site-header {
+  padding: 1rem var(--page-padding);
+}
+
+.site-header ul {
+  --gap: 1.5rem;
+}
+
+.site-header a {
+  color: var(--primary);
+  font-size: 1.1rem;
+  font-weight: 400;
+  text-decoration: none;
+  transition: color 300ms var(--ease-in-out);
+}
+
+.site-header a[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 0.25rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .site-header a:hover {
+    color: var(--highlight);
+  }
+}
+
+@media (max-width: 768px) {
+  .site-header,
+  .site-header ul {
+    justify-content: center;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Page content (about, leather, 404)                                  */
+/* ------------------------------------------------------------------ */
+.page {
+  --gap: var(--vs-base);
+  max-inline-size: var(--max-content-width);
+  padding: 0 var(--page-padding) var(--vs-base);
+}
+
+.page-leather {
+  padding-block-end: var(--page-padding);
+}
+
+.headshot {
+  inline-size: 250px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Home: rotated feature card                                          */
+/* ------------------------------------------------------------------ */
+.feature {
+  --gap: var(--vs-base);
+  --focus-ring: 2px solid var(--ink);
+  max-inline-size: var(--max-content-width);
+  margin: 3rem auto 0;
+  padding: 3rem;
+  background-color: var(--primary);
+  color: var(--ink);
+  transform: rotate(-2deg);
+}
+
+@media (max-width: 768px) {
+  .feature {
+    transform: rotate(0deg);
+  }
+}
+
+.feature h1 {
+  font-size: 3.5rem;
+  font-style: italic;
+}
+
+.tagline {
+  font-size: 1.5rem;
+  font-weight: var(--fw-bold);
+  line-height: var(--lh);
+}
+
+.social {
+  --gap: 1.25rem;
+}
+
+.social a {
+  display: block;
+  position: relative;
+  color: var(--ink);
+  transition: color 300ms var(--ease-in-out); /* exit */
+}
+
+/* Grow the tap target to at least 44px on smaller screens. */
+.social a::after {
+  --tap-target-minimum: 44px;
+  --inset-by: min(0px, calc((100% - var(--tap-target-minimum)) / 2));
+  content: "";
+  position: absolute;
+  inset: var(--inset-by);
+}
+
+@media (min-width: 60rem) {
+  .social a::after {
+    display: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .social a:hover {
+    color: var(--highlight-dark);
+    transition-duration: 200ms; /* enter */
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Leather image grid                                                  */
+/* ------------------------------------------------------------------ */
+.leather-grid {
+  grid-template-columns: repeat(3, 1fr);
+  padding-block-start: 0.5rem; /* plus the .stack gap = the old 1.5rem */
+}
+
+.leather-grid img {
+  inline-size: 100%;
+  border: 0.5rem solid var(--primary);
+}
+
+@media (max-width: 768px) {
+  .leather-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .leather-grid img {
+    border-width: 0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+  .leather-grid img {
+    transition: transform 250ms var(--ease-out);
+  }
+
+  .leather-grid img:hover {
+    transform: scale(1.25);
+    transition-duration: 150ms;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Page transitions: cross-document view transitions replace the old  */
+/* framer-motion 0.5s opacity fade. No JavaScript involved.           */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.5s;
+  }
+}
