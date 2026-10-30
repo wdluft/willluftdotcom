@@ -11,17 +11,22 @@ The site is the static folder `site/`. `.github/workflows/pages.yml` publishes i
 | `www.willluft.com` CNAME | `upbeat-williams-799f87.netlify.com` | `wdluft.github.io` |
 | MX / TXT / CAA | None found | No change (add only the verification TXT) |
 | Canonical host | Apex (`www` redirects to `willluft.com`) | Same. GitHub redirects `www` to the apex automatically. |
-| Repo Pages source | Probably the old `gh-pages` branch (**unconfirmed**: the API needs auth) | **GitHub Actions** |
+| Repo | `wdluft/willluft-2024` (Pages from its stale `gh-pages` branch, **unconfirmed**: the API needs auth) | New public repo **`wdluft/willluftdotcom`**, Pages source **GitHub Actions** |
 
 ## Checklist
 
 Do steps 1–4 before changing the A/CNAME records in step 5. GitHub warns that pointing DNS at Pages before the domain is claimed opens a takeover risk.
 
-1. **Repo → Settings → Pages → Build and deployment → Source: GitHub Actions.** *(you)*
-   - This stops publishing the stale `gh-pages` branch. Nothing live depends on it: willluft.com still points at Netlify.
-2. **Merge this branch to `main` and push.**
-   - Confirm the "Deploy to GitHub Pages" run in the Actions tab is green.
-   - Confirm https://wdluft.github.io/willluft-2024/ shows the new site. Its pages use relative links, so they work under the repo path. Only the 404 page needs the domain root.
+1. **Create the public repo `wdluft/willluftdotcom`** (empty: no README, .gitignore or license), then push this history to its `main`:
+   ```bash
+   git remote rename origin old-2024
+   git remote add origin https://github.com/wdluft/willluftdotcom.git
+   git push -u origin github-pages-rebuild:main
+   ```
+   - Pages on a free account needs a public repo.
+2. **willluftdotcom → Settings → Pages → Build and deployment → Source: GitHub Actions.**
+   - Then re-run the "Deploy to GitHub Pages" workflow from the Actions tab (the first run on push fails until Pages is enabled) and confirm it's green.
+   - Confirm https://wdluft.github.io/willluftdotcom/ shows the new site. Its pages use relative links, so they work under the repo path. Only the 404 page needs the domain root.
 3. **Verify the domain on your account.** *(you, recommended)*
    - GitHub profile → Settings → Pages → Add a domain → `willluft.com`.
    - GitHub shows a TXT record. In Namecheap → Advanced DNS add host `_github-pages-challenge-wdluft` with the value GitHub shows.
@@ -54,7 +59,7 @@ Do steps 1–4 before changing the A/CNAME records in step 5. GitHub warns that 
    - In the Netlify dashboard, remove `willluft.com` / `www.willluft.com` from whichever site holds them, then delete or stop that site.
    - **Unconfirmed which Netlify site that is.** The `www` CNAME points at `upbeat-williams-799f87`, but that site serves an old Gatsby build, so the domain is probably attached to a different site. The dashboard will show it.
 8. **Optional cleanup.**
-   - Delete the stale `gh-pages` branch: `git push origin --delete gh-pages`. It holds 2024 Parcel build output and isn't used once the source is GitHub Actions.
+   - In `wdluft/willluft-2024`, turn off Pages (Settings → Pages) or archive the repo. Its `gh-pages` branch is stale 2024 Parcel output and its github.io page renders blank.
 
 ## Check after cutover
 
@@ -63,6 +68,6 @@ Do steps 1–4 before changing the A/CNAME records in step 5. GitHub warns that 
 - `https://willluft.com/does-not-exist` shows the custom 404 page.
 - `nslookup willluft.com` returns only the 185.199.108–111.153 addresses, plus the `2606:50c0:800x::153` ones if you added the AAAA records.
 
-## Things to decide
+## Notes
 
-- **`wdluft/willluft-2026` also exists.** "Personal website, remade in 2026" is live at `wdluft.github.io/willluft-2026/` with no custom domain. Only one repo can hold `willluft.com`. This guide assumes `willluft-2024` does. If you'd rather point the domain at the 2026 repo, do step 4 there instead.
+- Only one repo can hold `willluft.com`; this guide gives it to `willluftdotcom`. Neither `willluft-2024` nor `willluft-2026` has a custom domain set today, so neither conflicts.
