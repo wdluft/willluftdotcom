@@ -26,13 +26,23 @@
   </header>
 
   <main id="main" class="page stack">
-    <img
-      class="headshot"
-      src="../assets/headshot.png"
-      width="1000"
-      height="1000"
-      alt="Headshot of Will Luft, a bearded man with a blurred background of a bookshelf"
-    >
+    <picture>
+      <source
+        type="image/avif"
+        srcset="../assets/headshot-250.avif 250w, ../assets/headshot-500.avif 500w, ../assets/headshot-750.avif 750w"
+        sizes="250px"
+      >
+      <img
+        class="headshot"
+        src="../assets/headshot-500.jpg"
+        srcset="../assets/headshot-250.jpg 250w, ../assets/headshot-500.jpg 500w, ../assets/headshot-750.jpg 750w"
+        sizes="250px"
+        width="500"
+        height="500"
+        fetchpriority="high"
+        alt="Headshot of Will Luft, a smiling man with a mustache and a ball cap in front of a bookshelf"
+      >
+    </picture>
     <h1>About Will</h1>
     <p>
       I work for

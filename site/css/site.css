@@ -130,6 +130,8 @@ a {
 
 .headshot {
   inline-size: 250px;
+  border: 0.5rem solid var(--primary);
+  border-radius: 50%;
 }
 
 /* ------------------------------------------------------------------ */
