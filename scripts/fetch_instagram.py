@@ -3,8 +3,11 @@
 
 Runs in the Pages workflow before upload, so the downloaded photos and the
 rewritten page exist only in the deployed copy of site/, never in git.
-Uses the official Instagram API (Instagram Login) and needs a long-lived
-token in IG_ACCESS_TOKEN. Without one it leaves the committed gallery as is.
+Uses the official Instagram API and needs a token in IG_ACCESS_TOKEN.
+Without one it leaves the committed gallery as is. Instagram Login tokens
+(IG...) go to graph.instagram.com; Facebook Login tokens (EAA..., what
+Meta's "Unified login" setup issues) go to graph.facebook.com and need the
+account's Instagram user ID in IG_USER_ID.
 
 Instagram's media URLs are signed and expire, so the photos are downloaded
 and served from this site instead of hotlinked.
@@ -23,7 +26,8 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-API = "https://graph.instagram.com/me/media"
+INSTAGRAM_API = "https://graph.instagram.com/me/media"
+FACEBOOK_API = "https://graph.facebook.com/{}/media"
 FIELDS = ("id,caption,media_type,media_url,thumbnail_url,permalink,"
           "children{media_type,media_url,thumbnail_url}")
 SITE = Path(__file__).resolve().parent.parent / "site"
@@ -39,8 +43,23 @@ def get(url):
         return resp.read()
 
 
+def media_endpoint(token):
+    """The media list URL for this kind of token. Logs the kind, never the token."""
+    if token.startswith("IG"):
+        print("Token type: Instagram Login (graph.instagram.com)")
+        return INSTAGRAM_API
+    if token.startswith("EA"):
+        user_id = os.environ.get("IG_USER_ID", "").strip()
+        if not user_id:
+            sys.exit("A Facebook Login token needs IG_USER_ID set")
+        print("Token type: Facebook Login (graph.facebook.com)")
+        return FACEBOOK_API.format(user_id)
+    sys.exit("IG_ACCESS_TOKEN doesn't look like an Instagram (IG...) or "
+             "Facebook (EA...) token: check the secret for stray characters")
+
+
 def fetch_posts(token, limit):
-    url = API + "?" + urllib.parse.urlencode(
+    url = media_endpoint(token) + "?" + urllib.parse.urlencode(
         {"fields": FIELDS, "limit": min(limit, 50), "access_token": token})
     posts = []
     while url and len(posts) < limit:
