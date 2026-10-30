@@ -13,6 +13,15 @@ The site is the static folder `site/`. `.github/workflows/pages.yml` publishes i
 | Canonical host | Apex (`www` redirects to `willluft.com`) | Same. GitHub redirects `www` to the apex automatically. |
 | Repo | `wdluft/willluft-2024` (Pages from its stale `gh-pages` branch, **unconfirmed**: the API needs auth) | New public repo **`wdluft/willluftdotcom`**, Pages source **GitHub Actions** |
 
+## Progress (2026-10-30)
+
+Steps 1–5 are done:
+- Repo created and pushed, Pages source set to GitHub Actions, first deploy green.
+- `willluft.com` verified on the account and set as the custom domain.
+- Namecheap now has the four GitHub A records, `www` → `wdluft.github.io.`, and the verification TXT. The Netlify A record is deleted.
+
+Still to do: wait for GitHub's DNS check and certificate, tick Enforce HTTPS (step 6), then retire Netlify and the old repos (steps 7–8).
+
 ## Checklist
 
 Do steps 1–4 before changing the A/CNAME records in step 5. GitHub warns that pointing DNS at Pages before the domain is claimed opens a takeover risk.
