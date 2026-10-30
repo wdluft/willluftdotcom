@@ -1,10 +1,14 @@
 # Publishes the static files in site/ to GitHub Pages.
-# No build step: site/ is deployed exactly as committed.
+# The only build step swaps the leather gallery for the latest Instagram
+# posts (scripts/fetch_instagram.py); everything else deploys as committed.
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
+  # Daily, to pick up new Instagram posts and keep the token fresh.
+  schedule:
+    - cron: "17 9 * * *"
   workflow_dispatch:
 
 permissions:
@@ -23,13 +27,44 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      CAN_REFRESH_TOKEN: ${{ secrets.IG_ACCESS_TOKEN != '' && secrets.IG_SECRET_WRITER != '' }}
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      # A failure here keeps the committed gallery and still deploys;
+      # the last step then marks the run failed so GitHub emails you.
+      - id: instagram
+        name: Fetch Instagram posts
+        continue-on-error: true
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python3 scripts/fetch_instagram.py
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
       - id: deployment
         uses: actions/deploy-pages@v5
+      # Long-lived tokens expire after 60 days unless refreshed. The new
+      # token is written back to the repo secret with a fine-grained PAT.
+      - id: refresh
+        name: Refresh Instagram token
+        if: env.CAN_REFRESH_TOKEN == 'true'
+        continue-on-error: true
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_TOKEN: ${{ secrets.IG_SECRET_WRITER }}
+        run: |
+          token=$(curl -fsS -G https://graph.instagram.com/refresh_access_token \
+            --data-urlencode grant_type=ig_refresh_token \
+            --data-urlencode "access_token=$IG_ACCESS_TOKEN" | jq -r '.access_token // empty')
+          [ -n "$token" ] || { echo "No token in the refresh response."; exit 1; }
+          echo "::add-mask::$token"
+          printf %s "$token" | gh secret set IG_ACCESS_TOKEN --repo "$GITHUB_REPOSITORY"
+      - name: Report Instagram failure
+        if: steps.instagram.outcome == 'failure' || steps.refresh.outcome == 'failure'
+        run: |
+          echo "::error::Instagram fetch or token refresh failed; see the steps above. The site still deployed."
+          exit 1

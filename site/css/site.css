@@ -208,6 +208,9 @@ a {
 
 .leather-grid img {
   inline-size: 100%;
+  /* Instagram posts can be portrait or landscape: crop to the square grid. */
+  aspect-ratio: 1;
+  object-fit: cover;
   border: 0.5rem solid var(--primary);
 }
 
