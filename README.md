@@ -39,7 +39,9 @@ It uses Instagram's official API, which needs a one-time setup:
 2. **Create a Meta app** at https://developers.facebook.com/apps: Create app, pick the "Manage messaging & content on Instagram" use case, and skip the business portfolio. It can stay unpublished, since only your own account uses it.
    - Then go to Use cases → Customize → API setup with Unified login. Meta requires a business portfolio here, so connect one or create a free one. Business verification isn't needed: choose "Verify later".
    - App roles → Roles → Add People → Instagram Tester → @willmadeleather. Accept the invite in Instagram under Settings → Apps and websites → Tester invites.
-3. **Generate a token.** Go to Use cases → Customize → API setup with Unified login → 2. Generate access tokens → Add account. Log in as @willmadeleather and copy the token. It's long-lived and lasts 60 days.
+3. **Generate a token.** Go to Use cases → Customize → API setup with Unified login → 2. Generate access tokens → Add account. Log in as @willmadeleather and copy the token.
+   - This page issues a Facebook Login token (it starts with `EAA`). The script sends those to graph.facebook.com using the account's Instagram user ID, which is set as `IG_USER_ID` in the workflow.
+   - To see when it expires, paste it into Meta's [Access Token Debugger](https://developers.facebook.com/tools/debug/accesstoken/). The workflow can only refresh Instagram Login tokens (starting with `IG`), so step 5 doesn't renew this one.
 4. **Add it to the repo:** willluftdotcom → Settings → Secrets and variables → Actions → New secret `IG_ACCESS_TOKEN`.
 5. **Let the workflow keep it fresh.** Create a fine-grained personal access token limited to `wdluft/willluftdotcom` with **Secrets: Read and write**. Save it as the repo secret `IG_SECRET_WRITER`. Each run then refreshes the Instagram token and saves the new one. Without this secret you'd have to repeat step 3 every 60 days.
 6. Run **Deploy to GitHub Pages** from the Actions tab and check that the leather page shows your posts.
