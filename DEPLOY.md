@@ -15,12 +15,15 @@ The site is the static folder `site/`. `.github/workflows/pages.yml` publishes i
 
 ## Progress (2026-10-30)
 
-Steps 1–5 are done:
+Steps 1–7 are done:
 - Repo created and pushed, Pages source set to GitHub Actions, first deploy green.
 - `willluft.com` verified on the account and set as the custom domain.
 - Namecheap now has the four GitHub A records, `www` → `wdluft.github.io.`, and the verification TXT. The Netlify A record is deleted.
+- GitHub's DNS check passed and the certificate was issued about 8 hours after the DNS change. Enforce HTTPS is on.
+- Every check under "Check after cutover" passes.
+- `willluft.com` and `www.willluft.com` are removed from the Netlify project `shimmering-parfait-e1ee70` (listed as "willluft.com"). The project itself still exists. Delete it in Netlify if you no longer want it.
 
-Still to do: wait for GitHub's DNS check and certificate, tick Enforce HTTPS (step 6), then retire Netlify and the old repos (steps 7–8).
+Still to do: turn off Pages on `willluft-2024` (step 8). Its "Unpublish site" confirmation was left open in Chrome.
 
 ## Checklist
 
@@ -66,7 +69,7 @@ Do steps 1–4 before changing the A/CNAME records in step 5. GitHub warns that 
    - Do the cutover at a quiet time. The current site sends HSTS (1 year), so returning visitors get a certificate error until GitHub's certificate is issued.
 7. **Retire Netlify.** *(you)*
    - In the Netlify dashboard, remove `willluft.com` / `www.willluft.com` from whichever site holds them, then delete or stop that site.
-   - **Unconfirmed which Netlify site that is.** The `www` CNAME points at `upbeat-williams-799f87`, but that site serves an old Gatsby build, so the domain is probably attached to a different site. The dashboard will show it.
+   - It was the project `shimmering-parfait-e1ee70`, not `upbeat-williams-799f87`, which the old `www` CNAME pointed at.
 8. **Optional cleanup.**
    - In `wdluft/willluft-2024`, turn off Pages (Settings → Pages) or archive the repo. Its `gh-pages` branch is stale 2024 Parcel output and its github.io page renders blank.
 
