@@ -15,15 +15,14 @@ The site is the static folder `site/`. `.github/workflows/pages.yml` publishes i
 
 ## Progress (2026-10-30)
 
-Steps 1–7 are done:
+All steps are done:
 - Repo created and pushed, Pages source set to GitHub Actions, first deploy green.
 - `willluft.com` verified on the account and set as the custom domain.
 - Namecheap now has the four GitHub A records, `www` → `wdluft.github.io.`, and the verification TXT. The Netlify A record is deleted.
 - GitHub's DNS check passed and the certificate was issued about 8 hours after the DNS change. Enforce HTTPS is on.
 - Every check under "Check after cutover" passes.
 - `willluft.com` and `www.willluft.com` are removed from the Netlify project `shimmering-parfait-e1ee70` (listed as "willluft.com"). The project itself still exists. Delete it in Netlify if you no longer want it.
-
-Still to do: turn off Pages on `willluft-2024` (step 8). Its "Unpublish site" confirmation was left open in Chrome.
+- Pages on `willluft-2024` is unpublished (`wdluft.github.io/willluft-2024/` returns 404). The repo itself is not archived.
 
 ## Checklist
 
